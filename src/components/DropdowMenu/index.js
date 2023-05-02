@@ -1,49 +1,43 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useRef } from "react";
+import { View } from "react-native";
+import RBSheet from "react-native-raw-bottom-sheet";
+import { Box, Button, Text, Spacer } from "../../components/index"
+import { Ionicons } from "@expo/vector-icons";
+import { deletePost } from "../../services/post";
 
-const DropdownButton = () => {
-    const [isMenuVisible, setIsMenuVisible] = useState(false);
+export default function Example({ onDelete, id, navigation }) {
+    const refRBSheet = useRef();
 
-    const handleMenuPress = () => {
-        setIsMenuVisible(!isMenuVisible);
+    function deleteUniquePost() {
+        onDelete()
     }
-
-    const handleEditPress = () => {
-        // lógica para editar o item
-        setIsMenuVisible(false);
+    function goToEdit() {
+        navigation.navigate("Create", { id })
     }
-
-    const handleDeletePress = () => {
-        // lógica para deletar o item
-        setIsMenuVisible(false);
-    }
-
     return (
-        <View>
-            <TouchableOpacity onPress={handleMenuPress}>
-                <Text><Ionicons size={25} name='chevron-down' /></Text>
-            </TouchableOpacity>
-
-            <Modal
-                visible={isMenuVisible}
-                animationType="slide"
-                transparent={true}
-                onRequestClose={() => setIsMenuVisible(false)}
+        <Box>
+            <Text onPress={() => refRBSheet.current.open()}><Ionicons size={25} name='chevron-down' /></Text>
+            <RBSheet
+                ref={refRBSheet}
+                height={150}
+                closeOnDragDown={true}
+                closeOnPressMask={false}
+                customStyles={{
+                    wrapper: {
+                        backgroundColor: "transparent"
+                    },
+                    draggableIcon: {
+                        backgroundColor: "#000"
+                    }
+                }}
             >
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                    <View style={{ backgroundColor: '#fff', padding: 20 }}>
-                        <TouchableOpacity onPress={handleEditPress}>
-                            <Text>Editar</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={handleDeletePress}>
-                            <Text>Excluir</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
-        </View>
-    );
-};
+                <Box hasPadding align="center">
+                    <Text bold color="muted" onPress={goToEdit}>Editar</Text>
+                    <Spacer size="20px" />
+                    <Text bold color="primary" onPress={deleteUniquePost}>Excluir</Text>
+                </Box>
 
-export default DropdownButton;
+            </RBSheet>
+        </Box>
+    );
+}

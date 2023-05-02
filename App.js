@@ -7,17 +7,18 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from './src/pages/home/HomeScreen';
 import SignIn from './src/pages/sigIn/SignIn';
-import Feed from './src/pages/feed';
-import Create from './src/create';
+import Feed from './src/pages/feed/Feed';
+import Create from './src/pages/create/Create';
 import PostId from './src/pages/post/Post.js';
 import { AuthContext, AuthProvider } from './src/context/authContext';
 import { colors } from "./styles/theme.json"
 import { Ionicons } from '@expo/vector-icons';
-import { DrawerContent, createDrawerNavigator } from '@react-navigation/drawer';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import CustomDrawer from './src/components/CustomDrawer';
+import FlashMessage from 'react-native-flash-message';
 
 const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
+
 const Drawer = createDrawerNavigator()
 
 const MyStack = () => {
@@ -29,6 +30,7 @@ const MyStack = () => {
         <Stack.Navigator initialRouteName='Home'>
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="SignIn" component={SignIn} />
+
         </Stack.Navigator>
 
       ) : (
@@ -50,10 +52,10 @@ const MyStack = () => {
             ),
           }} />
           <Drawer.Screen name="Post" component={PostId} options={{
-            drawerLabel: 'Ver último conteúdo',
-            drawerIcon: ({ color, size }) => (
-              <Ionicons name="albums-outline" color={color} size={size} />
-            ),
+            drawerLabel: () => null,
+            drawerItemStyle: { display: 'none' },
+            headerShown: false,
+            key: 'post'
           }} />
         </Drawer.Navigator>
       )}
@@ -66,6 +68,7 @@ const App = () => {
   return (
     <AuthProvider>
       <MyStack />
+      <FlashMessage />
     </AuthProvider>
   );
 };

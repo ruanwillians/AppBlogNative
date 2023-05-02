@@ -80,6 +80,18 @@ export const Text = styled.Text.attrs((props) => ({
 export const Input = styled.TextInput.attrs({ placeholderTextColor: colors.muted, })`
     display: flex;
     width: 100%;
+    height: ${(props) => props.height || "auto"};
+    padding: 13px 15px;
+    font-size: 17px;
+    border-radius: 5px;
+    background: ${colors.light2};
+    border: 1px solid ${colors.dark};
+    color: ${colors.dark};
+`;
+export const InputArea = styled.TextInput.attrs({ placeholderTextColor: colors.muted, })`
+    display: flex;
+    width: 100%;
+    height: ${(props) => props.height || "200px"};
     padding: 13px 15px;
     font-size: 17px;
     border-radius: 5px;

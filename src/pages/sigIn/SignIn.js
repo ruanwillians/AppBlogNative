@@ -5,33 +5,49 @@ import { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "../../context/authContext";
 import { signInUser } from "../../services/user";
-
-
+import FlashMessage, { showMessage } from "react-native-flash-message";
+import { Ionicons } from "@expo/vector-icons";
+import Spinner from "react-native-loading-spinner-overlay/lib";
 
 const SignIn = ({ navigation }) => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const { toggleAuth } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
+    setLoading(true)
     try {
       const response = await signInUser(email, password)
-      console.log(response)
 
       if (response.status === 200) {
-        const { token, username } = response.data;
+        const { token, username, id } = response.data;
         await AsyncStorage.setItem('token', `Bearer ${token.token}`);
-        await AsyncStorage.setItem('username', `${username}`);
+        await AsyncStorage.setItem('id', `${username}`);
+        await AsyncStorage.setItem('id', `${id}`);
         toggleAuth()
+      } else {
+        showMessage({
+          message: "Login ou senha inválido",
+          type: "danger",
+          description: "Verifique e tente novamente",
+          icon: props => <Ionicons size={20} name='close' />,
+        });
       }
     } catch (error) {
       console.error(error);
-      Alert.alert('Error', 'Failed to login.');
+      showMessage({
+        message: "Houve um erro",
+        description: "Tente novamente mais tarde",
+        type: "warning",
+      });
     }
+    setLoading(false)
   }
 
   return (
     <Box background="ligth" justify="center" align="center" hasPadding >
+      <Spacer size="70px" />
       <Image style={{ width: 100, height: 100 }} source={require('../../../public/assets/LOGO.png')} />
       <Spacer size="30px" />
       <Title bold color="dark">Entre na sua conta</Title>
@@ -46,7 +62,14 @@ const SignIn = ({ navigation }) => {
         <Text bold color="light">Entrar</Text>
       </Button>
       <Spacer size="20px" />
-      <Text color="muted">Já possuo cadastro</Text>
+      <Text color="muted">Ainda não possui cadastro?</Text>
+      <Box justify="center" align="center" hasPadding>
+        <Spinner
+          visible={loading}
+          textContent={'Carregando'}
+          textStyle={{ color: "white" }}
+        />
+      </Box>
     </Box>
   )
 
