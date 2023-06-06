@@ -7,6 +7,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from './src/pages/home/HomeScreen';
 import SignIn from './src/pages/sigIn/SignIn';
+import Register from './src/pages/register/Register';
 import Feed from './src/pages/feed/Feed';
 import Create from './src/pages/create/Create';
 import PostId from './src/pages/post/Post.js';
@@ -30,6 +31,7 @@ const MyStack = () => {
         <Stack.Navigator initialRouteName='Home'>
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="SignIn" component={SignIn} />
+          <Stack.Screen name="Register" component={Register} />
 
         </Stack.Navigator>
 

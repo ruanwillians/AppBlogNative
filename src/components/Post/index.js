@@ -6,10 +6,37 @@ import { getUserId } from "../../services/user"
 import DropdownButton from "../DropdowMenu"
 import Spinner from "react-native-loading-spinner-overlay"
 import { showMessage } from "react-native-flash-message"
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Ionicons } from "@expo/vector-icons";
 
 const Post = ({ content, title, image, user, created_at, navigation, id, onDelete }) => {
 
     const [loading, setLoading] = useState(false)
+
+    async function goToEdit() {
+        const response = await getPostId(id)
+        if (response.status === 200) {
+            const userId = await AsyncStorage.getItem('id');
+            if (response.data.data.user_id == userId) {
+                navigation.navigate('Create', { data: response.data.data });
+            } else {
+                showMessage({
+                    message: "Esse post não foi criado por você",
+                    type: "danger",
+                    description: "Por isso você não pode edita-lo",
+                    icon: props => <Ionicons size={20} name='close' color={"#fff"} />,
+                });
+            }
+        } else {
+            showMessage({
+                message: "Houve um erro ao acessar o conteúdo",
+                type: "danger",
+                description: "Tente novamente mais tarde",
+                icon: props => <Ionicons size={20} name='close' color={"#fff"} />,
+            });
+        }
+        setLoading(false)
+    }
 
     async function viewPost() {
         setLoading(true)
@@ -35,7 +62,7 @@ const Post = ({ content, title, image, user, created_at, navigation, id, onDelet
             <View style={{ flexDirection: "row", marginBottom: -5 }}>
                 <Title>{title}</Title>
                 <Box align="flex-end"  >
-                    <DropdownButton onDelete={onDelete} id={id} navigation={navigation} />
+                    <DropdownButton onDelete={onDelete} id={content} navigation={navigation} goToEdit={goToEdit} />
                 </Box>
             </View>
             <Spacer color="white" size="10px" />

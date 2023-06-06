@@ -1,5 +1,5 @@
 import { Title, Box, Spacer, Input, Text, Button, InputArea } from '../../components/index';
-import { createPost } from '../../services/post';
+import { createPost, editPost } from '../../services/post';
 import { useState, useEffect } from 'react';
 import Spinner from 'react-native-loading-spinner-overlay/lib';
 import { showMessage } from 'react-native-flash-message';
@@ -12,7 +12,24 @@ const Create = ({ navigation, route }) => {
     const [title, setTitle] = useState("")
     const [content, setContent] = useState("")
     const [image, setImage] = useState("")
+    const [id, setId] = useState("")
+    const [update, setUpdate] = useState()
     const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        console.log(route)
+        if (route.params) {
+            const { data, username } = route.params;
+            setTitle(data.title);
+            setImage(data.image);
+            setContent(data.content);
+            setId(data.id);
+            setUpdate(true);
+        } else {
+            setUpdate(false);
+        }
+    }, [route.params]);
+
 
     async function createNewPost({ route }) {
         setLoading(true)
@@ -34,6 +51,32 @@ const Create = ({ navigation, route }) => {
             } catch (error) {
                 showMessage({
                     message: "Não foi possível criar o seu conteúdo",
+                    type: "warning",
+                    description: "Tente novamente mais tarde",
+                });
+            }
+        }
+        setLoading(false)
+    }
+    async function editMyPost({ route }) {
+        setLoading(true)
+        const valid = validate()
+
+        if (valid) {
+            try {
+                const res = await editPost(id, title, content, image)
+                setLoading(false)
+                navigation.navigate("Feed")
+                showMessage({
+                    message: "Post editado com sucesso",
+                    type: "success",
+                    description: "Seu conteúdo está disponível no feed",
+                    icon: props => <Ionicons size={20} name='checkmark' color={"#fff"} />,
+                });
+
+            } catch (error) {
+                showMessage({
+                    message: "Não foi possível editar o conteúdo",
                     type: "warning",
                     description: "Tente novamente mais tarde",
                 });
@@ -73,9 +116,11 @@ const Create = ({ navigation, route }) => {
         setImage("")
         setTitle("")
         setLoading(false)
+        setUpdate(false)
     }
 
     useEffect(() => {
+        setUpdate(false)
         const unsubscrible = navigation.addListener("blur", () => {
             resetData()
         })
@@ -84,9 +129,17 @@ const Create = ({ navigation, route }) => {
 
     return (
         <Box background="ligth" justify="center" align="center" hasPadding >
-            <Title bold color="dark">Faça sua postagem</Title>
+            {update ? (
+                <Title bold color="dark">Edite sua postagem</Title>
+            ) : (<Title bold color="dark">Faça sua postagem</Title>)}
+
             <Spacer />
-            <Text align="center" spacing="0px 40px">Publique assuntos do seu interesse com todos da rede</Text>
+            {update ? (
+                <Text align="center" spacing="0px 40px">Edite o conteúdo, da sua postagem e publique para todos da rede.</Text>
+            ) : (
+                <Text align="center" spacing="0px 40px"> Publique assuntos do seu interesse com todos da sua rede.</Text>
+            )}
+
             <Spacer size="30px" />
             <Input placeholder="Título" value={title} onChangeText={setTitle} />
             <Spacer size="10px" />
@@ -94,9 +147,16 @@ const Create = ({ navigation, route }) => {
             <Spacer size="10px" />
             <Input placeholder="Url da imagem" value={image} onChangeText={setImage} />
             <Spacer size="20px" />
-            <Button block background="secondary" onPress={createNewPost}>
-                <Text bold color="light">Postar</Text>
-            </Button>
+            {update ? (
+                <Button block background="secondary" onPress={editMyPost}>
+                    <Text bold color="light">Editar</Text>
+                </Button>
+            ) : (
+                <Button block background="secondary" onPress={createNewPost}>
+                    <Text bold color="light">Postar</Text>
+                </Button>
+            )}
+
             <Spinner
                 visible={loading}
                 textContent={'Carregando'}

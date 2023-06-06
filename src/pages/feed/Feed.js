@@ -37,7 +37,7 @@ const Feed = ({ navigation }) => {
       });
     } else {
       showMessage({
-        message: "Não foi possível excluir o seu conteúdo",
+        message: "Não foi possível excluir o conteúdo",
         type: "warning",
         description: "Você pode apenas excluir conteúdos criados por você",
       });
@@ -45,9 +45,7 @@ const Feed = ({ navigation }) => {
     setLoading(false)
   };
 
-  useEffect(() => {
-    console.log(post)
-  }, [post])
+
 
   useEffect(() => {
     const unsubscrible = navigation.addListener("focus", () => {
@@ -60,7 +58,7 @@ const Feed = ({ navigation }) => {
     <SafeAreaView style={{ flex: 1 }}>
       <FlatList
         data={post}
-        renderItem={({ item }) => <PostCard {...item} navigation={navigation} onDelete={() => handleDeletePost(item.id)} />}
+        renderItem={({ item }) => <PostCard {...item} navigation={navigation} id={item.id} onDelete={() => handleDeletePost(item.id)} />}
         keyExtractor={item => item.id}
       />
       <Spinner

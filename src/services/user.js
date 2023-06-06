@@ -33,3 +33,20 @@ export const getUserId = async (id) => {
       return err
     });
 }
+export const registerUser = async (username, email, password) => {
+  const user = {
+    username,
+    email,
+    password,
+  }
+  return await api.post(`/users`, user, {
+  })
+    .then((response) => {
+      if (response.status === 201) {
+        return response
+      }
+    })
+    .catch((err) => {
+      return err
+    });
+}
